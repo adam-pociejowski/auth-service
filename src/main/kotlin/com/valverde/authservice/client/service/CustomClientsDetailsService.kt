@@ -19,7 +19,7 @@ class CustomClientsDetailsService(val clientRepository: ClientRepository) : Clie
             val client: Client = clientOptional.get()
             val details = BaseClientDetails()
             details.clientId = clientId
-            details.clientSecret = "{noop}"+client.secretHash
+            details.clientSecret = client.secretHash
             details.setAuthorizedGrantTypes(client.grantTypes.map { grantType -> grantType.name })
             details.setResourceIds(client.resources.map { resource -> resource.name })
             details.setScope(client.scopes.map { scope -> scope.name })

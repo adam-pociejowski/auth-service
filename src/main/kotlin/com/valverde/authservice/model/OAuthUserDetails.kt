@@ -1,4 +1,4 @@
-package com.valverde.authservice.configuration
+package com.valverde.authservice.model
 
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails

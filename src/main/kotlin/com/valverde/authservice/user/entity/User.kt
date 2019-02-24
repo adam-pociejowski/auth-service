@@ -1,4 +1,4 @@
-package com.valverde.authservice.entity
+package com.valverde.authservice.user.entity
 
 import java.time.LocalDateTime
 import javax.persistence.*

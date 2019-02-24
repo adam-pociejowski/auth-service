@@ -1,6 +1,6 @@
 package com.valverde.authservice.configuration
 
-import com.valverde.authservice.service.CustomUserDetailsService
+import com.valverde.authservice.user.service.CustomUserDetailsService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

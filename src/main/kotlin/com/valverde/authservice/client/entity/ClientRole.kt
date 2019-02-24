@@ -1,4 +1,4 @@
-package com.valverde.authservice.entity
+package com.valverde.authservice.client.entity
 
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
@@ -6,8 +6,8 @@ import javax.persistence.Id
 import javax.persistence.Table
 
 @Entity
-@Table(name = "user_role")
-data class UserRole(
+@Table(name = "client_role")
+data class ClientRole(
         @Id
         @GeneratedValue
         val id: Long? = null,

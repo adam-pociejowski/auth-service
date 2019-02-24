@@ -1,4 +1,4 @@
-package com.valverde.authservice.model
+package com.valverde.authservice.user.model
 
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -7,7 +7,7 @@ import java.time.LocalDateTime
 
 data class OAuthUserDetails(private val username: String?,
                             private val password: String?,
-                            private val authorities: java.util.HashSet<SimpleGrantedAuthority>,
+                            private val authorities: MutableList<SimpleGrantedAuthority>,
                             private val email: String?,
                             private val creationDate: LocalDateTime? = null) : UserDetails {
 
@@ -21,7 +21,7 @@ data class OAuthUserDetails(private val username: String?,
 
     override fun isAccountNonLocked(): Boolean = true
 
-    override fun getAuthorities(): MutableCollection<out GrantedAuthority> = ArrayList()
+    override fun getAuthorities(): MutableCollection<out GrantedAuthority> = authorities
 
     override fun isEnabled(): Boolean = true
 }

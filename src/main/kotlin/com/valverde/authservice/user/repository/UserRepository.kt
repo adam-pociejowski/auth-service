@@ -1,6 +1,6 @@
-package com.valverde.authservice.repository
+package com.valverde.authservice.user.repository
 
-import com.valverde.authservice.entity.User
+import com.valverde.authservice.user.entity.User
 import org.springframework.data.jpa.repository.JpaRepository
 import java.util.*
 

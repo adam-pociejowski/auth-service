@@ -7,7 +7,7 @@ import org.springframework.boot.runApplication
 
 @SpringBootApplication
 @EnableConfigurationProperties
-@EntityScan(basePackages = ["com.valverde.authservice.entity"])
+@EntityScan(basePackages = ["com.valverde.authservice.user", "com.valverde.authservice.client"])
 class AuthServiceApplication
 
 fun main(args: Array<String>) {

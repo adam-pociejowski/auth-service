@@ -1,11 +1,11 @@
 package com.valverde.authservice.configuration
 
 import com.valverde.authservice.client.service.CustomClientsDetailsService
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Lazy
 import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter
@@ -14,24 +14,21 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer
 import org.springframework.security.oauth2.provider.token.DefaultAccessTokenConverter
 import org.springframework.security.oauth2.provider.token.TokenStore
-import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore
 import java.security.KeyPair
 
 @Configuration
 @EnableAuthorizationServer
+@EnableGlobalMethodSecurity(securedEnabled = true)
 class AuthServerConfiguration(
-        authenticationConfiguration: AuthenticationConfiguration,
+        @Lazy val authenticationManager : AuthenticationManager,
         val customClientsDetailsService: CustomClientsDetailsService,
-        private val keyPair: KeyPair,
-        @param:Value("\${security.oauth2.authorizationserver.jwt.enabled:true}") private val jwtEnabled: Boolean) : AuthorizationServerConfigurerAdapter() {
-
-    private val authenticationManager: AuthenticationManager = authenticationConfiguration.authenticationManager
+        val keyPair: KeyPair) : AuthorizationServerConfigurerAdapter() {
 
     @Throws(Exception::class)
-    override fun configure(oauthServer: AuthorizationServerSecurityConfigurer?) {
-        oauthServer!!
+    override fun configure(security: AuthorizationServerSecurityConfigurer?) {
+        security!!
                 .tokenKeyAccess("permitAll()")
                 .checkTokenAccess("isAuthenticated()")
                 .passwordEncoder(BCryptPasswordEncoder())
@@ -39,25 +36,20 @@ class AuthServerConfiguration(
 
     @Throws(Exception::class)
     override fun configure(clients: ClientDetailsServiceConfigurer?) {
-        clients!!.withClientDetails(customClientsDetailsService)
+        clients!!
+                .withClientDetails(customClientsDetailsService)
     }
 
     override fun configure(endpoints: AuthorizationServerEndpointsConfigurer?) {
         endpoints!!
                 .authenticationManager(this.authenticationManager)
                 .tokenStore(tokenStore())
-        if (this.jwtEnabled) {
-            endpoints.accessTokenConverter(accessTokenConverter())
-        }
+                .accessTokenConverter(accessTokenConverter())
     }
 
     @Bean
     fun tokenStore(): TokenStore {
-        return if (this.jwtEnabled) {
-            JwtTokenStore(accessTokenConverter())
-        } else {
-            InMemoryTokenStore()
-        }
+        return JwtTokenStore(accessTokenConverter())
     }
 
     @Bean

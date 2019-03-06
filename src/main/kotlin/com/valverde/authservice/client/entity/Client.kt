@@ -9,7 +9,9 @@ data class Client(
         @GeneratedValue
         val id: Long? = null,
         val name: String? = "",
-        val secretHash: String? = ""
+        val secretHash: String? = "",
+        val accessTokenValiditySeconds: Int? = null,
+        val refreshTokenValiditySeconds: Int? = null
 ) {
     @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     @JoinTable(name = "client2scope",

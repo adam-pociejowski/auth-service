@@ -24,8 +24,8 @@ class CustomClientsDetailsService(val clientRepository: ClientRepository) : Clie
             details.setResourceIds(client.resources.map { resource -> resource.name })
             details.setScope(client.scopes.map { scope -> scope.name })
             details.authorities = client.roles.map { role -> SimpleGrantedAuthority(role.name) }
-            details.accessTokenValiditySeconds = 5000
-            details.refreshTokenValiditySeconds = 10000
+            details.accessTokenValiditySeconds = client.accessTokenValiditySeconds
+            details.refreshTokenValiditySeconds = client.refreshTokenValiditySeconds
             return details
         } else {
             throw RuntimeException("No client with clientId: $clientId found")

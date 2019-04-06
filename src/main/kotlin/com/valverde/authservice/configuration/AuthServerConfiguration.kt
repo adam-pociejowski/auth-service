@@ -12,25 +12,21 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer
-import org.springframework.security.oauth2.provider.token.DefaultAccessTokenConverter
 import org.springframework.security.oauth2.provider.token.TokenStore
-import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter
-import org.springframework.security.oauth2.provider.token.store.JwtTokenStore
-import java.security.KeyPair
+import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore
 
 @Configuration
 @EnableAuthorizationServer
 @EnableGlobalMethodSecurity(securedEnabled = true)
 class AuthServerConfiguration(
         @Lazy val authenticationManager : AuthenticationManager,
-        val customClientsDetailsService: CustomClientsDetailsService,
-        val keyPair: KeyPair) : AuthorizationServerConfigurerAdapter() {
+        val customClientsDetailsService: CustomClientsDetailsService) : AuthorizationServerConfigurerAdapter() {
 
     @Throws(Exception::class)
     override fun configure(security: AuthorizationServerSecurityConfigurer?) {
         security!!
                 .tokenKeyAccess("permitAll()")
-                .checkTokenAccess("isAuthenticated()")
+                .checkTokenAccess("permitAll()")
                 .passwordEncoder(BCryptPasswordEncoder())
     }
 
@@ -44,20 +40,10 @@ class AuthServerConfiguration(
         endpoints!!
                 .authenticationManager(this.authenticationManager)
                 .tokenStore(tokenStore())
-                .accessTokenConverter(accessTokenConverter())
     }
 
     @Bean
     fun tokenStore(): TokenStore {
-        return JwtTokenStore(accessTokenConverter())
-    }
-
-    @Bean
-    fun accessTokenConverter(): JwtAccessTokenConverter {
-        val converter = JwtAccessTokenConverter()
-        converter.setKeyPair(this.keyPair)
-        val accessTokenConverter = DefaultAccessTokenConverter()
-        converter.accessTokenConverter = accessTokenConverter
-        return converter
+        return InMemoryTokenStore()
     }
 }

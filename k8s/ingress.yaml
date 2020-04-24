@@ -1,0 +1,13 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: "oauth2-ingress-nginx"
+  namespace: "oauth"
+spec:
+  rules:
+    - host: oauth.valverde.duckdns.org
+      http:
+        paths:
+          - backend:
+              serviceName: oauth-postgres
+              servicePort: 5432

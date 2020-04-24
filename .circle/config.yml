@@ -1,0 +1,47 @@
+version: 2.1
+jobs:
+  build:
+    working_directory: ~/monitor-progress-backend
+    docker:
+      - image: circleci/openjdk:8-jdk-stretch
+    steps:
+      - checkout
+      - setup_remote_docker
+      - restore_cache:
+          key: circleci-demo-java-spring-{{ checksum "pom.xml" }}
+      - run: mvn dependency:go-offline
+      - save_cache: # saves the project dependencies
+          paths:
+            - ~/.m2
+          key: circleci-demo-java-spring-{{ checksum "pom.xml" }}
+      - run: mvn package -Dmaven.test.skip=true
+      - run:
+           name: Log In into Dockerhub
+           command: echo "$DOCKERHUB_PASSWORD" | docker login --username $DOCKERHUB_USERNAME --password-stdin
+      - run:
+           name: Build docker image
+           command: docker build -t apociejowski/oauth2-authorization-server:$CIRCLE_BUILD_NUM -t apociejowski/oauth2-authorization-server:latest .
+      - run:
+          name: Push current version of docker image
+          command: docker push apociejowski/oauth2-authorization-server:$CIRCLE_BUILD_NUM
+      - run:
+           name: Push latest version of docker image
+           command: docker push apociejowski/oauth2-authorization-server:latest
+      - add_ssh_keys:
+          fingerprints:
+            - $PRIVATE_KEY_FINGERPRINT
+      - run:
+           name: Add server IP to known hosts
+           command: ssh-keyscan $MASTER_SERVER_URL >> ~/.ssh/known_hosts
+      - run:
+           name: Change image version in configuration file
+           command: find ./k8s/. -name deployment.yaml -exec sed -i "s/apociejowski\/oauth2-authorization-server/apociejowski\/oauth2-authorization-server:$CIRCLE_BUILD_NUM/g" {} +
+      - run:
+           name: Send configuration files to server
+           command: 'scp -i ~/.ssh/id_rsa_circleci_remote_docker_engine -r k8s valverde@$MASTER_SERVER_URL:'
+      - run:
+           name: Apply kubernetes configuration
+           command: ssh -i ~/.ssh/id_rsa_circleci_remote_docker_engine valverde@$MASTER_SERVER_URL 'kubectl apply -f ~/k8s'
+      - run:
+           name: Remove kubernetes configuration files
+           command: ssh -i ~/.ssh/id_rsa_circleci_remote_docker_engine valverde@$MASTER_SERVER_URL 'rm -r ~/k8s*'

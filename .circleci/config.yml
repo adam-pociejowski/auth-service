@@ -9,12 +9,16 @@ jobs:
       - setup_remote_docker
       - restore_cache:
           key: circleci-demo-java-spring-{{ checksum "pom.xml" }}
-      - run: mvn dependency:go-offline
+      - run:
+          name: Install dependencies
+          command: mvn dependency:go-offline
       - save_cache: # saves the project dependencies
           paths:
             - ~/.m2
           key: circleci-demo-java-spring-{{ checksum "pom.xml" }}
-      - run: mvn package -Dmaven.test.skip=true
+      - run:
+           name: Prepare artifact
+           command: mvn package -Dmaven.test.skip=true
       - run:
            name: Log In into Dockerhub
            command: echo "$DOCKERHUB_PASSWORD" | docker login --username $DOCKERHUB_USERNAME --password-stdin

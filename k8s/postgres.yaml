@@ -13,7 +13,7 @@ data:
 kind: PersistentVolume
 apiVersion: v1
 metadata:
-  name: oauth-postgres-pv-volume
+  name: oauth-postgres-volume
   namespace: "oauth"
   labels:
     type: local
@@ -56,7 +56,7 @@ spec:
     spec:
       containers:
         - name: oauth-postgres
-          image: postgres:10.4
+          image: postgres:11
           imagePullPolicy: "IfNotPresent"
           ports:
             - containerPort: 5432

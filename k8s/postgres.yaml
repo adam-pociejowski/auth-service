@@ -6,9 +6,9 @@ metadata:
   labels:
     app: oauth-postgres
 data:
-  POSTGRES_DB: postgresdb
-  POSTGRES_USER: postgresadmin
-  POSTGRES_PASSWORD: admin123
+  POSTGRES_DB: oauth
+  POSTGRES_USER: postgre_test_user
+  POSTGRES_PASSWORD: postgre_test_pass
 ---
 kind: PersistentVolume
 apiVersion: v1
